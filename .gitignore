@@ -1,0 +1,21 @@
+# Sistema
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Firebase
+.firebase/
+firebase-debug.log*
+firestore-debug.log*
+ui-debug.log*
+
+# Node / Dependencias (por si acaso usas npm en el futuro)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# IDEs
+.vscode/
+.idea/

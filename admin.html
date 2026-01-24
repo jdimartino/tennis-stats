@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Panel de administración - Tennis Stats">
+    <meta name="theme-color" content="#2563EB">
+    <meta name="robots" content="noindex, nofollow">
+
+    <title>Admin - Tenis Tachira Stats</title>
+
+    <!-- Estilos -->
+    <link rel="stylesheet" href="css/styles.css?v=1.1">
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+</head>
+
+<body>
+
+    <!-- Login Section -->
+    <div id="login-section" class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="logo-icon" style="text-align: center; margin-bottom: 1rem;">
+                    <img src="images/logo-club.png" alt="Club Logo"
+                        style="width:3rem;height:3rem;object-fit:contain;" />
+                </div>
+                <h1 class="login-title">Panel de Administración</h1>
+                <p class="login-subtitle">Ingresa tus credenciales para continuar</p>
+            </div>
+
+            <form id="login-form">
+                <div class="form-group">
+                    <label class="form-label" for="login-email">Email</label>
+                    <input type="email" id="login-email" class="form-input" placeholder="admin@example.com" required
+                        autocomplete="email">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="login-password">Contraseña</label>
+                    <input type="password" id="login-password" class="form-input" placeholder="••••••••" required
+                        autocomplete="current-password">
+                </div>
+
+                <div id="login-error" class="alert alert-error hidden">
+                    Error al iniciar sesión
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+                    🔓 Iniciar Sesión
+                </button>
+
+                <a href="index.html" class="btn btn-secondary"
+                    style="width: 100%; margin-top: 0.5rem; text-align: center;">
+                    ← Volver al inicio
+                </a>
+            </form>
+        </div>
+    </div>
+
+    <!-- App Content -->
+    <div id="app-content" class="hidden">
+
+        <!-- Header -->
+        <header class="header">
+            <div class="container">
+                <div class="header-content">
+                    <a href="index.html" class="logo">
+                        <img src="images/logo-club.png" alt="Club Logo" class="logo-icon"
+                            style="width:2rem;height:2rem;object-fit:contain;" />
+                        <span>Tenis Tachira Stats</span>
+                    </a>
+                    <button id="logout-btn" class="btn btn-secondary btn-sm">
+                        🚪 Salir
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main">
+            <div class="container">
+
+                <h1 class="section-title mb-4">⚙️ Panel de Administración</h1>
+
+                <!-- Navegación -->
+                <div class="admin-nav">
+                    <button class="nav-item tab-btn active" data-seccion="jugadores">
+                        👥 Jugadores
+                    </button>
+                    <button class="nav-item tab-btn" data-seccion="partidos">
+                        🎾 Registrar Partido
+                    </button>
+                    <button class="nav-item tab-btn" data-seccion="gestion">
+                        🎾 Gestionar Partidos
+                    </button>
+                    <button class="nav-item tab-btn" data-seccion="clubes">
+                        🏢 Clubes
+                    </button>
+
+                </div>
+
+                <!-- SECCIÓN JUGADORES -->
+                <section id="jugadores-section" class="admin-section active">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 id="form-jugador-titulo" class="card-title">Registrar Nuevo Jugador</h3>
+                        </div>
+                        <div class="card-body">
+                            <form id="form-jugador">
+                                <input type="hidden" id="edit-jugador-id" value="">
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                                    <div class="form-group">
+                                        <label class="form-label" for="jugador-nombre">Nombre</label>
+                                        <input type="text" id="jugador-nombre" class="form-input" placeholder="Ej: Juan"
+                                            required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label" for="jugador-apellido">Apellido</label>
+                                        <input type="text" id="jugador-apellido" class="form-input"
+                                            placeholder="Ej: Pérez" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label" for="jugador-categoria">Categoría</label>
+                                        <select id="jugador-categoria" class="form-select" required>
+                                            <option value="">Seleccionar...</option>
+                                            <option value="3ra">3ra</option>
+                                            <option value="4ta">4ta</option>
+                                            <option value="5ta">5ta</option>
+                                            <option value="6ta">6ta</option>
+                                            <option value="7ma">7ma</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label" for="jugador-club">Club</label>
+                                        <select id="jugador-club" class="form-select" required>
+                                            <option value="">Seleccionar...</option>
+                                            <!-- Se llena vía JS -->
+                                        </select>
+                                    </div>
+                                </div>
+                                <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                                    <button type="submit" id="btn-submit-jugador" class="btn btn-primary"
+                                        style="flex: 2;">
+                                        👤 Agregar Jugador
+                                    </button>
+                                    <button type="button" id="btn-cancel-edit-jugador" class="btn btn-secondary hidden"
+                                        style="flex: 1;">
+                                        ❌ Cancelar
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h3 class="card-title">Listado de Jugadores</h3>
+                        </div>
+                        <div id="jugadores-lista" class="card-body">
+                            <!-- Se llena vía JS -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SECCIÓN REGISTRO DE PARTIDOS -->
+                <section id="partidos-section" class="admin-section">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 id="form-partido-titulo" class="card-title">Registrar Nuevo Partido</h3>
+                        </div>
+                        <div class="card-body">
+                            <form id="form-partido">
+                                <input type="hidden" id="edit-match-id" value="">
+
+                                <!-- Tipo de Partido -->
+                                <div class="form-group" style="margin-bottom: 1.5rem;">
+                                    <label class="form-label">🏆 Tipo de Partido</label>
+                                    <div style="display: flex; gap: 1rem; margin-top: 0.5rem;">
+                                        <label class="match-type-option"
+                                            style="display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.25rem; border-radius: var(--radius-md); cursor: pointer; border: 2px solid var(--color-border); transition: all 0.2s;">
+                                            <input type="radio" name="tipo-partido" id="tipo-amistoso" value="amistoso"
+                                                checked style="accent-color: #3B82F6;">
+                                            <span style="font-weight: 600; color: #3B82F6;">🤝 Amistoso</span>
+                                        </label>
+                                        <label class="match-type-option"
+                                            style="display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.25rem; border-radius: var(--radius-md); cursor: pointer; border: 2px solid var(--color-border); transition: all 0.2s;">
+                                            <input type="radio" name="tipo-partido" id="tipo-cta" value="cta"
+                                                style="accent-color: #F59E0B;">
+                                            <span style="font-weight: 600; color: #F59E0B;">🏆 CTA</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!-- Fecha del Partido -->
+                                <div class="form-group" style="margin-bottom: 1.5rem;">
+                                    <label class="form-label">📅 Fecha del Partido</label>
+                                    <input type="date" id="partido-fecha" class="form-input" style="max-width: 250px;">
+                                </div>
+
+                                <!-- Equipos en Grid Responsive -->
+                                <div class="match-form-grid">
+
+                                    <!-- Equipo 1 -->
+                                    <div class="team-card team-1">
+                                        <h4
+                                            style="color: var(--color-primary); margin-bottom: 0.75rem; font-size: 1rem;">
+                                            🟢 Equipo 1</h4>
+                                        <div class="form-group" style="margin-bottom: 0.75rem;">
+                                            <select id="equipo1-jugador1" class="form-select" required>
+                                                <option value="">Jugador 1...</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group" style="margin-bottom: 0;">
+                                            <select id="equipo1-jugador2" class="form-select" required>
+                                                <option value="">Jugador 2...</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <!-- Equipo 2 -->
+                                    <div class="team-card team-2">
+                                        <h4 style="color: #EF4444; margin-bottom: 0.75rem; font-size: 1rem;">🔴 Equipo 2
+                                        </h4>
+                                        <div class="form-group" style="margin-bottom: 0.75rem;">
+                                            <select id="equipo2-jugador1" class="form-select" required>
+                                                <option value="">Jugador 1...</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group" style="margin-bottom: 0;">
+                                            <select id="equipo2-jugador2" class="form-select" required>
+                                                <option value="">Jugador 2...</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Resultados en Grid Responsive -->
+                                <div class="results-grid-container">
+                                    <h4
+                                        style="margin-bottom: 1rem; font-size: 1.1rem; color: var(--color-text-primary);">
+                                        📊 Resultados</h4>
+
+                                    <div class="sets-flex-container">
+
+                                        <!-- Set 1 -->
+                                        <div class="set-column">
+                                            <label class="set-label primary">Set 1 *</label>
+                                            <div class="score-row">
+                                                <input type="number" id="set1-equipo1"
+                                                    class="form-input score-input team1-score" min="0" max="7"
+                                                    placeholder="0" required>
+                                                <span class="score-dash">-</span>
+                                                <input type="number" id="set1-equipo2"
+                                                    class="form-input score-input team2-score" min="0" max="7"
+                                                    placeholder="0" required>
+                                            </div>
+                                        </div>
+
+                                        <!-- Set 2 -->
+                                        <div class="set-column">
+                                            <label class="set-label">Set 2</label>
+                                            <div class="score-row">
+                                                <input type="number" id="set2-equipo1"
+                                                    class="form-input score-input team1-score" min="0" max="7"
+                                                    placeholder="-">
+                                                <span class="score-dash">-</span>
+                                                <input type="number" id="set2-equipo2"
+                                                    class="form-input score-input team2-score" min="0" max="7"
+                                                    placeholder="-">
+                                            </div>
+                                        </div>
+
+                                        <!-- Set 3 -->
+                                        <div class="set-column">
+                                            <label class="set-label">Set 3</label>
+                                            <div class="score-row">
+                                                <input type="number" id="set3-equipo1"
+                                                    class="form-input score-input team1-score" min="0" max="25"
+                                                    placeholder="-">
+                                                <span class="score-dash">-</span>
+                                                <input type="number" id="set3-equipo2"
+                                                    class="form-input score-input team2-score" min="0" max="25"
+                                                    placeholder="-">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <p
+                                        style="margin-top: 1rem; font-size: 0.85rem; color: var(--color-text-muted); text-align: center;">
+                                        💡 Tip: Enter para saltar al siguiente campo.
+                                    </p>
+                                </div>
+
+                                <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                                    <button type="submit" id="btn-submit-partido" class="btn btn-primary"
+                                        style="flex: 2; font-size: 1.1rem; padding: 1rem;">
+                                        ✅ Registrar Partido
+                                    </button>
+                                    <button type="button" id="btn-cancel-edit" class="btn btn-secondary hidden"
+                                        style="flex: 1; padding: 1rem;">
+                                        ❌ Cancelar
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SECCIÓN GESTIÓN DE PARTIDOS (NUEVA) -->
+                <section id="gestion-section" class="admin-section">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Historial y Modificación de Partidos</h3>
+                        </div>
+                        <div class="card-body">
+                            <div id="gestion-partidos-lista">
+                                <!-- Se llena vía JS -->
+                                <div class="text-center p-4">Cargando partidos...</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SECCIÓN CLUBES (NUEVA) -->
+                <section id="clubes-section" class="admin-section">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Gestionar Clubes</h3>
+                        </div>
+                        <div class="card-body">
+                            <form id="form-club">
+                                <div class="form-group">
+                                    <label class="form-label" for="club-nombre">Nombre del Club</label>
+                                    <div style="display: flex; gap: 0.5rem;">
+                                        <input type="text" id="club-nombre" class="form-input"
+                                            placeholder="Ej: Club Tenis" required>
+                                        <button type="submit" class="btn btn-primary">➕ Agregar</button>
+                                    </div>
+                                    <div style="margin-top: 1rem; text-align: right;">
+                                        <button type="button" class="btn btn-secondary btn-sm"
+                                            onclick="cargarClubesPredefinidos()">
+                                            ⬇️ Cargar Clubes Default
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+
+                            <div class="mt-4">
+                                <h4
+                                    style="margin-bottom: 1rem; border-bottom: 1px solid var(--color-border); padding-bottom: 0.5rem;">
+                                    Listado de Clubes</h4>
+                                <div id="clubes-lista">
+                                    <!-- Se llena vía JS -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+
+
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer
+            style="background: var(--color-bg-card); border-top: 1px solid var(--color-border); padding: 2rem 0; margin-top: 4rem; text-align: center;">
+            <div class="container">
+                <p style="color: var(--color-text-muted); font-size: 0.9rem; margin: 0;">
+                    Desarrollado por <strong style="color: var(--color-primary);">JDM Services Systems</strong>
+                </p>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/firebase-config.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/admin-v3.js?v=3.0"></script>
+</body>
+
+</html>

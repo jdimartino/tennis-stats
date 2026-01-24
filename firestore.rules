@@ -1,0 +1,27 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Permisos para la colección de jugadores
+    match /players/{playerId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    
+    // Permisos para la colección de partidos
+    match /matches/{matchId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    
+    // Permisos para la colección de clubes
+    match /clubs/{clubId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
+    // Por defecto, cualquier otra colección requiere estar autenticado
+    match /{document=**} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}

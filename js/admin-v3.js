@@ -10,7 +10,16 @@ console.log("Admin JS v1.3 loaded");
 let jugadoresAdmin = {};
 let clubesAdmin = {};
 let partidosAdmin = [];
+let ligasAdmin = {};
 let seccionActual = 'jugadores';
+// Check URL params first, then localStorage
+const urlParams = new URLSearchParams(window.location.search);
+let leagueId = urlParams.get('liga') || localStorage.getItem('adminLeagueId') || '';
+
+// Save to localStorage if we got it from URL
+if (urlParams.get('liga')) {
+    localStorage.setItem('adminLeagueId', leagueId);
+}
 
 /**
  * Inicializa el panel de administración
@@ -20,17 +29,33 @@ async function inicializarAdmin() {
         // Verificar autenticación
         await verificarAutenticacion();
 
+        // Cargar Ligas primero (para el contexto)
+        await cargarLigasAdmin();
+        configurarSelectorContexto();
+
+        // Si no hay liga seleccionada, forzar selección o tomar la primera
+        if (!leagueId && Object.keys(ligasAdmin).length > 0) {
+            leagueId = Object.keys(ligasAdmin)[0];
+            localStorage.setItem('adminLeagueId', leagueId);
+        }
+
+        // Actualizar selector UI
+        const selector = document.getElementById('league-context-select');
+        if (selector) selector.value = leagueId;
+
         // Mostrar contenido de la app
         mostrarApp();
 
         // Configurar navegación
         configurarNavegacion();
 
-        // Cargar jugadores y clubes
-        await Promise.all([
-            cargarJugadoresAdmin(),
-            cargarClubesAdmin()
-        ]);
+        // Cargar datos (filtrados por liga)
+        if (leagueId) {
+            await Promise.all([
+                cargarJugadoresAdmin(),
+                cargarClubesAdmin()
+            ]);
+        }
 
         // Mostrar sección de jugadores por defecto
         mostrarSeccion('jugadores');
@@ -91,7 +116,38 @@ function mostrarSeccion(nombreSeccion) {
         cargarSelectorEstadisticas();
     } else if (nombreSeccion === 'clubes') {
         mostrarClubesGestion();
+    } else if (nombreSeccion === 'ligas') {
+        mostrarLigasGestion();
     }
+}
+
+/**
+ * Configura el selector de contexto de liga
+ */
+function configurarSelectorContexto() {
+    const selector = document.getElementById('league-context-select');
+    if (!selector) return;
+
+    selector.innerHTML = Object.values(ligasAdmin).map(l =>
+        `<option value="${l.id}">${l.nombre}</option>`
+    ).join('');
+
+    selector.value = leagueId;
+
+    selector.addEventListener('change', async (e) => {
+        leagueId = e.target.value;
+        localStorage.setItem('adminLeagueId', leagueId);
+
+        // Recargar datos con el nuevo contexto
+        await cargarJugadoresAdmin();
+        // Resetear vistas
+        mostrarSeccion(seccionActual);
+        if (seccionActual === 'gestion') cargarHistorialGestion();
+
+        console.log("Contexto cambiado a:", leagueId);
+        // Update UI title with new league name
+        await actualizarTituloLiga();
+    });
 }
 
 // ============================================
@@ -103,7 +159,12 @@ function mostrarSeccion(nombreSeccion) {
  */
 async function cargarJugadoresAdmin() {
     try {
-        const snapshot = await db.collection('players').orderBy('apellido').get();
+        let query = db.collection('players');
+        if (leagueId) {
+            query = query.where('leagueId', '==', leagueId);
+        }
+
+        const snapshot = await query.get(); // Ordenamiento manual post-fetch si usamos where
         jugadoresAdmin = {};
 
         snapshot.forEach((doc) => {
@@ -178,6 +239,7 @@ async function guardarJugador(nombre, apellido, categoria, clubId) {
         apellido: apellido.trim(),
         categoria: categoria,
         clubId: clubId,
+        leagueId: leagueId // Contexto actual
     };
 
     try {
@@ -393,7 +455,12 @@ async function cargarHistorialGestion() {
     container.innerHTML = '<div class="text-center p-4">Cargando...</div>';
 
     try {
-        const snapshot = await db.collection('matches').orderBy('fecha', 'desc').limit(20).get();
+        let query = db.collection('matches');
+        if (leagueId) {
+            query = query.where('leagueId', '==', leagueId);
+        }
+
+        const snapshot = await query.orderBy('fecha', 'desc').limit(20).get();
         const partidos = [];
         snapshot.forEach(doc => partidos.push({ id: doc.id, ...doc.data() }));
 
@@ -880,7 +947,8 @@ function configurarFormularios() {
             },
             sets: sets,
             ganador: calcularGanadorAutomatico(sets),
-            fecha: firebase.firestore.Timestamp.fromDate(fecha)
+            fecha: firebase.firestore.Timestamp.fromDate(fecha),
+            leagueId: leagueId // Contexto actual
         };
 
         try {
@@ -1029,3 +1097,77 @@ async function cargarClubesPredefinidos() {
     mostrarClubesGestion();
     mostrarAlerta(`Se han agregado ${agregados} clubes nuevos.`);
 }
+
+// ============================================
+// GESTIÓN DE LIGAS
+// ============================================
+
+/**
+ * Carga todas las ligas
+ */
+async function cargarLigasAdmin() {
+    try {
+        const snapshot = await db.collection('leagues').get();
+        ligasAdmin = {};
+
+        snapshot.forEach(doc => {
+            ligasAdmin[doc.id] = { id: doc.id, ...doc.data() };
+        });
+    } catch (error) {
+        console.error("Error cargando ligas:", error);
+    }
+}
+
+/**
+ * Muestra la lista de ligas en la gestión
+ */
+function mostrarLigasGestion() {
+    const container = document.getElementById('ligas-lista');
+    if (!container) return;
+
+    const ligas = Object.values(ligasAdmin);
+
+    container.innerHTML = ligas.map(l => `
+        <div class="club-item" style="display:flex; justify-content:space-between; align-items:center;">
+             <span>${l.nombre} <small style="opacity:0.6">(${l.id})</small></span>
+             <button class="btn btn-action btn-action-danger" onclick="eliminarLiga('${l.id}')">🗑️</button>
+        </div>
+    `).join('');
+
+    document.getElementById('form-liga').onsubmit = async (e) => {
+        e.preventDefault();
+        const nombre = document.getElementById('liga-nombre').value.trim();
+        if (!nombre) return;
+
+        const id = nombre.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+
+        try {
+            await db.collection('leagues').doc(id).set({
+                nombre: nombre,
+                active: true,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            mostrarAlerta('Liga creada exitosamente');
+            document.getElementById('form-liga').reset();
+            await cargarLigasAdmin();
+            configurarSelectorContexto(); // Actualizar selector
+            mostrarLigasGestion();
+        } catch (e) {
+            mostrarAlerta('Error al crear liga', 'error');
+        }
+    };
+}
+
+async function eliminarLiga(id) {
+    if (!confirm("¿Estás seguro? Esto no borrará los datos, pero ocultará la liga.")) return;
+    try {
+        await db.collection('leagues').doc(id).delete();
+        await cargarLigasAdmin();
+        configurarSelectorContexto();
+        mostrarLigasGestion();
+        mostrarAlerta("Liga eliminada");
+    } catch (e) {
+        mostrarAlerta("Error al eliminar", "error");
+    }
+}
+window.eliminarLiga = eliminarLiga;

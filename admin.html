@@ -85,7 +85,20 @@
         <main class="main">
             <div class="container">
 
-                <h1 class="section-title mb-4">⚙️ Panel de Administración</h1>
+                <div
+                    style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem;">
+                    <h1 class="section-title" style="margin: 0;">⚙️ Panel de Administración</h1>
+                    <div
+                        style="background: var(--color-bg-card); padding: 0.5rem 1rem; border-radius: var(--radius-md); border: 1px solid var(--color-border); display: flex; align-items: center; gap: 0.75rem;">
+                        <label for="league-context-select"
+                            style="font-weight: 600; color: var(--color-primary); font-size: 0.9rem;">🏆 Liga
+                            Activa:</label>
+                        <select id="league-context-select" class="form-select"
+                            style="padding: 0.4rem 2rem 0.4rem 0.75rem; min-width: 180px; margin: 0; background-color: var(--color-bg);">
+                            <!-- Se llena vía JS -->
+                        </select>
+                    </div>
+                </div>
 
                 <!-- Navegación -->
                 <div class="admin-nav">
@@ -100,6 +113,9 @@
                     </button>
                     <button class="nav-item tab-btn" data-seccion="clubes">
                         🏢 Clubes
+                    </button>
+                    <button class="nav-item tab-btn" data-seccion="ligas">
+                        🏆 Ligas
                     </button>
 
                 </div>
@@ -355,6 +371,36 @@
                                     style="margin-bottom: 1rem; border-bottom: 1px solid var(--color-border); padding-bottom: 0.5rem;">
                                     Listado de Clubes</h4>
                                 <div id="clubes-lista">
+                                    <!-- Se llena vía JS -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SECCIÓN LIGAS -->
+                <section id="ligas-section" class="admin-section">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Gestionar Ligas</h3>
+                        </div>
+                        <div class="card-body">
+                            <form id="form-liga">
+                                <div class="form-group">
+                                    <label class="form-label" for="liga-nombre">Nombre de la Nueva Liga</label>
+                                    <div style="display: flex; gap: 0.5rem;">
+                                        <input type="text" id="liga-nombre" class="form-input"
+                                            placeholder="Ej: 6ta B Masculino" required>
+                                        <button type="submit" class="btn btn-primary">➕ Crear Liga</button>
+                                    </div>
+                                </div>
+                            </form>
+
+                            <div class="mt-4">
+                                <h4
+                                    style="margin-bottom: 1rem; border-bottom: 1px solid var(--color-border); padding-bottom: 0.5rem;">
+                                    Ligas Existentes</h4>
+                                <div id="ligas-lista">
                                     <!-- Se llena vía JS -->
                                 </div>
                             </div>

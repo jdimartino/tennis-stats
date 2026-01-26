@@ -5,20 +5,29 @@
 
 let jugadores = {};
 let partidos = [];
+let leagueId = new URLSearchParams(window.location.search).get('liga');
 
 /**
  * Inicializa la aplicación
  */
 async function inicializarApp() {
     try {
-        // Cargar jugadores
+        if (!leagueId) {
+            await mostrarSelectorDeLigas();
+            return;
+        }
+
+        // Cargar jugadores (Filtrado por liga)
         await cargarJugadores();
 
-        // Cargar partidos recientes
+        // Cargar partidos recientes (Filtrado por liga)
         await cargarPartidosRecientes();
 
         // Calcular y mostrar ranking
         mostrarRanking();
+
+        // Actualizar UI con nombre de la liga
+        actualizarTituloLiga();
 
     } catch (error) {
         console.error('Error al inicializar app:', error);
@@ -26,12 +35,84 @@ async function inicializarApp() {
     }
 }
 
+async function mostrarSelectorDeLigas() {
+    const main = document.querySelector('.main .container');
+    main.innerHTML = '<div class="loading"><div class="spinner"></div><span>Cargando ligas...</span></div>';
+
+    try {
+        const snapshot = await db.collection('leagues').where('active', '==', true).get();
+        if (snapshot.empty) {
+            main.innerHTML = '<div class="alert alert-error">No hay ligas activas disponibles.</div>';
+            return;
+        }
+
+        let html = `
+            <div class="section-header" style="text-align: center; margin-bottom: 2rem;">
+                <h2 class="section-title">Selecciona tu Liga</h2>
+                <p>Elige la categoría que deseas consultar</p>
+            </div>
+            <div class="league-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
+        `;
+
+        snapshot.forEach(doc => {
+            const league = doc.data();
+            html += `
+                <a href="?liga=${doc.id}" class="league-card" style="
+                    display: block;
+                    background: var(--color-bg-card);
+                    padding: 2rem;
+                    border-radius: var(--radius-md);
+                    text-decoration: none;
+                    border: 1px solid var(--color-border);
+                    text-align: center;
+                    transition: all 0.2s ease;
+                ">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">🏆</div>
+                    <h3 style="color: var(--color-text); margin-bottom: 0.5rem; font-size: 1.5rem;">${league.nombre}</h3>
+                    <span style="color: var(--color-primary); font-weight: bold;">Ver Estadísticas &rarr;</span>
+                </a>
+            `;
+        });
+
+        html += '</div>';
+        main.innerHTML = html;
+
+        // Add hover effect via JS since inline styles are limited
+        document.querySelectorAll('.league-card').forEach(card => {
+            card.onmouseenter = () => { card.style.transform = 'translateY(-5px)'; card.style.boxShadow = '0 10px 20px rgba(0,0,0,0.2)'; };
+            card.onmouseleave = () => { card.style.transform = 'translateY(0)'; card.style.boxShadow = 'none'; };
+        });
+
+    } catch (error) {
+        console.error(error);
+        main.innerHTML = '<div class="alert alert-error">Error cargando ligas.</div>';
+    }
+}
+
+async function actualizarTituloLiga() {
+    try {
+        const doc = await db.collection('leagues').doc(leagueId).get();
+        if (doc.exists) {
+            const nombre = doc.data().nombre;
+            document.title = `${nombre} - Tenis Tachira Stats`;
+            const titulo = document.querySelector('.logo span');
+            if (titulo) titulo.innerText = nombre; // Cambiar texto del logo
+
+            // Update Admin link to include league context
+            const adminLink = document.querySelector('header .btn-primary');
+            if (adminLink && leagueId) {
+                adminLink.href = `admin.html?liga=${leagueId}`;
+            }
+        }
+    } catch (e) { console.error(e); }
+}
+
 /**
  * Carga todos los jugadores desde Firestore
  */
 async function cargarJugadores() {
     try {
-        const snapshot = await db.collection('players').get();
+        const snapshot = await db.collection('players').where('leagueId', '==', leagueId).get();
         jugadores = {};
 
         snapshot.forEach((doc) => {
@@ -54,6 +135,7 @@ async function cargarJugadores() {
 async function cargarPartidosRecientes() {
     try {
         const snapshot = await db.collection('matches')
+            .where('leagueId', '==', leagueId)
             .orderBy('fecha', 'desc')
             .get();
 
@@ -164,7 +246,8 @@ function mostrarRanking() {
     const stats = calcularEstadisticas();
 
     // Ordenar por efectividad (porcentaje de victorias)
-    const ranking = Object.values(stats).sort((a, b) => b.efectividad - a.efectividad);
+    const ranking = Object.values(stats)
+        .sort((a, b) => b.efectividad - a.efectividad);
 
     if (ranking.length === 0) {
         rankingContainer.innerHTML = `

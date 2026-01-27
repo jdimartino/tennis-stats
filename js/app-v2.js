@@ -287,10 +287,10 @@ function mostrarRanking() {
         <tr>
           <th>Pos</th>
           <th>Jugador</th>
-          <th class="hide-mobile">Partidos</th>
-          <th>GANADOS</th>
-          <th>PERDIDOS</th>
-          <th>Efectividad</th>
+          <th>PJ</th>
+          <th>PG</th>
+          <th>PP</th>
+          <th>EF%</th>
         </tr>
       </thead>
       <tbody>
@@ -298,7 +298,7 @@ function mostrarRanking() {
           <tr onclick="abrirDetalleJugador('${jugador.id}')" title="Ver estadísticas detalladas">
             <td><span class="rank-number">${index + 1}</span></td>
             <td><span class="player-name">${jugador.nombre}</span></td>
-            <td class="hide-mobile">${jugador.partidos}</td>
+            <td>${jugador.partidos}</td>
             <td>${jugador.victorias}</td>
             <td>${jugador.derrotas}</td>
             <td><span class="effectiveness">${jugador.efectividad.toFixed(1)}%</span></td>

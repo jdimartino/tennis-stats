@@ -6,6 +6,7 @@
 let jugadores = {};
 let partidos = [];
 let leagueId = new URLSearchParams(window.location.search).get('liga');
+let clubTachiraId = null;
 
 /**
  * Inicializa la aplicación
@@ -16,6 +17,9 @@ async function inicializarApp() {
             await mostrarSelectorDeLigas();
             return;
         }
+
+        // Obtener ID del Club Táchira para filtrar ranking
+        await obtenerIdClubTachira();
 
         // Cargar jugadores (Filtrado por liga)
         await cargarJugadores();
@@ -86,6 +90,21 @@ async function mostrarSelectorDeLigas() {
     } catch (error) {
         console.error(error);
         main.innerHTML = '<div class="alert alert-error">Error cargando ligas.</div>';
+    }
+}
+
+/**
+ * Obtiene el ID del Club Táchira para filtrar el ranking
+ */
+async function obtenerIdClubTachira() {
+    try {
+        const snapshot = await db.collection('clubs').where('nombre', '==', 'Club Táchira').get();
+        if (!snapshot.empty) {
+            clubTachiraId = snapshot.docs[0].id;
+            console.log('Club Táchira ID:', clubTachiraId);
+        }
+    } catch (error) {
+        console.error('Error al cargar Club Táchira:', error);
     }
 }
 
@@ -245,8 +264,10 @@ function mostrarRanking() {
     // Calcular estadísticas de cada jugador
     const stats = calcularEstadisticas();
 
+    // Filtrar solo jugadores de Club Táchira (si se encontró el ID)
     // Ordenar por efectividad (porcentaje de victorias)
     const ranking = Object.values(stats)
+        .filter(p => !clubTachiraId || jugadores[p.id].clubId === clubTachiraId)
         .sort((a, b) => b.efectividad - a.efectividad);
 
     if (ranking.length === 0) {

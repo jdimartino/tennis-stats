@@ -195,14 +195,8 @@ function mostrarJugadores() {
         return;
     }
 
-    // Ordenar por Club (A-Z) y luego por Nombre (A-Z)
+    // Ordenar alfabéticamente por Nombre
     jugadoresArray.sort((a, b) => {
-        const clubA = clubesAdmin[a.clubId]?.nombre || 'ZZZ'; // Peculiaridad para que 'Sin Club' vaya al final si se desea, o 'Sin Club' literal
-        const clubB = clubesAdmin[b.clubId]?.nombre || 'ZZZ';
-
-        const clubSort = clubA.localeCompare(clubB);
-        if (clubSort !== 0) return clubSort;
-
         const nameA = `${a.nombre} ${a.apellido}`;
         const nameB = `${b.nombre} ${b.apellido}`;
         return nameA.localeCompare(nameB);

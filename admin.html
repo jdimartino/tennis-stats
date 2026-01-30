@@ -11,7 +11,7 @@
     <title>Admin - Tenis Tachira Stats</title>
 
     <!-- Estilos -->
-    <link rel="stylesheet" href="css/styles.css?v=1.1">
+    <link rel="stylesheet" href="css/styles.css?v=1.2">
 
     <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -91,7 +91,7 @@
                     <div
                         style="background: var(--color-bg-card); padding: 0.5rem 1rem; border-radius: var(--radius-md); border: 1px solid var(--color-border); display: flex; align-items: center; gap: 0.75rem;">
                         <label for="league-context-select"
-                            style="font-weight: 600; color: var(--color-primary); font-size: 0.9rem;">🏆 Liga
+                            style="font-weight: 600; color: var(--color-primary); font-size: 0.9rem;">🏆 Equipo
                             Activa:</label>
                         <select id="league-context-select" class="form-select"
                             style="padding: 0.4rem 2rem 0.4rem 0.75rem; min-width: 180px; margin: 0; background-color: var(--color-bg);">
@@ -114,8 +114,8 @@
                     <button class="nav-item tab-btn" data-seccion="clubes">
                         🏢 Clubes
                     </button>
-                    <button class="nav-item tab-btn" data-seccion="ligas">
-                        🏆 Ligas
+                    <button class="nav-item tab-btn" data-seccion="equipos">
+                        🏆 Equipos
                     </button>
 
                 </div>
@@ -378,20 +378,19 @@
                     </div>
                 </section>
 
-                <!-- SECCIÓN LIGAS -->
-                <section id="ligas-section" class="admin-section">
+                <!-- SECCIÓN EQUIPOS -->
+                <section id="equipos-section" class="admin-section">
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title">Gestionar Ligas</h3>
+                            <h3 class="card-title">Gestionar Equipos</h3>
                         </div>
                         <div class="card-body">
-                            <form id="form-liga">
+                            <form id="form-equipo">
                                 <div class="form-group">
-                                    <label class="form-label" for="liga-nombre">Nombre de la Nueva Liga</label>
                                     <div style="display: flex; gap: 0.5rem;">
-                                        <input type="text" id="liga-nombre" class="form-input"
+                                        <input type="text" id="equipo-nombre" class="form-input"
                                             placeholder="Ej: 6ta B Masculino" required>
-                                        <button type="submit" class="btn btn-primary">➕ Crear Liga</button>
+                                        <button type="submit" class="btn btn-primary">➕ Crear Equipo</button>
                                     </div>
                                 </div>
                             </form>
@@ -399,8 +398,8 @@
                             <div class="mt-4">
                                 <h4
                                     style="margin-bottom: 1rem; border-bottom: 1px solid var(--color-border); padding-bottom: 0.5rem;">
-                                    Ligas Existentes</h4>
-                                <div id="ligas-lista">
+                                    Equipos Existentes</h4>
+                                <div id="equipos-lista">
                                     <!-- Se llena vía JS -->
                                 </div>
                             </div>
@@ -428,7 +427,7 @@
     <!-- Scripts -->
     <script src="js/firebase-config.js"></script>
     <script src="js/auth.js"></script>
-    <script src="js/admin-v3.js?v=3.0"></script>
+    <script src="js/admin-v3.js?v=3.1"></script>
 </body>
 
 </html>

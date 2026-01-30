@@ -5,7 +5,7 @@
 
 let jugadores = {};
 let partidos = [];
-let leagueId = new URLSearchParams(window.location.search).get('liga');
+let leagueId = new URLSearchParams(window.location.search).get('equipo');
 let clubTachiraId = null;
 
 /**
@@ -14,24 +14,24 @@ let clubTachiraId = null;
 async function inicializarApp() {
     try {
         if (!leagueId) {
-            await mostrarSelectorDeLigas();
+            await mostrarSelectorDeEquipos();
             return;
         }
 
         // Obtener ID del Club Táchira para filtrar ranking
         await obtenerIdClubTachira();
 
-        // Cargar jugadores (Filtrado por liga)
+        // Cargar jugadores (Filtrado por equipo)
         await cargarJugadores();
 
-        // Cargar partidos recientes (Filtrado por liga)
+        // Cargar partidos recientes (Filtrado por equipo)
         await cargarPartidosRecientes();
 
         // Calcular y mostrar ranking
         mostrarRanking();
 
-        // Actualizar UI con nombre de la liga
-        actualizarTituloLiga();
+        // Actualizar UI con nombre del equipo
+        actualizarTituloEquipo();
 
     } catch (error) {
         console.error('Error al inicializar app:', error);
@@ -39,41 +39,33 @@ async function inicializarApp() {
     }
 }
 
-async function mostrarSelectorDeLigas() {
+async function mostrarSelectorDeEquipos() {
     const main = document.querySelector('.main .container');
-    main.innerHTML = '<div class="loading"><div class="spinner"></div><span>Cargando ligas...</span></div>';
+    main.innerHTML = '<div class="loading"><div class="spinner"></div><span>Cargando equipos...</span></div>';
 
     try {
         const snapshot = await db.collection('leagues').where('active', '==', true).get();
         if (snapshot.empty) {
-            main.innerHTML = '<div class="alert alert-error">No hay ligas activas disponibles.</div>';
+            main.innerHTML = '<div class="alert alert-error">No hay equipos activos disponibles.</div>';
             return;
         }
 
         let html = `
             <div class="section-header" style="text-align: center; margin-bottom: 2rem;">
-                <h2 class="section-title">Selecciona tu Liga</h2>
-                <p>Elige la categoría que deseas consultar</p>
+                <h2 class="section-title">Selecciona tu Equipo</h2>
             </div>
-            <div class="league-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
+            <div class="league-grid">
         `;
 
         snapshot.forEach(doc => {
             const league = doc.data();
             html += `
-                <a href="?liga=${doc.id}" class="league-card" style="
-                    display: block;
-                    background: var(--color-bg-card);
-                    padding: 2rem;
-                    border-radius: var(--radius-md);
-                    text-decoration: none;
-                    border: 1px solid var(--color-border);
-                    text-align: center;
-                    transition: all 0.2s ease;
-                ">
-                    <div style="font-size: 3rem; margin-bottom: 1rem;">🏆</div>
-                    <h3 style="color: var(--color-text); margin-bottom: 0.5rem; font-size: 1.5rem;">${league.nombre}</h3>
-                    <span style="color: var(--color-primary); font-weight: bold;">Ver Estadísticas &rarr;</span>
+                <a href="?equipo=${doc.id}" class="team-card">
+                    <div class="team-card-content">
+                        <div class="team-icon">🎾</div>
+                        <h3 class="team-name">${league.nombre}</h3>
+                    </div>
+                    <div class="team-card-glow"></div>
                 </a>
             `;
         });
@@ -81,15 +73,9 @@ async function mostrarSelectorDeLigas() {
         html += '</div>';
         main.innerHTML = html;
 
-        // Add hover effect via JS since inline styles are limited
-        document.querySelectorAll('.league-card').forEach(card => {
-            card.onmouseenter = () => { card.style.transform = 'translateY(-5px)'; card.style.boxShadow = '0 10px 20px rgba(0,0,0,0.2)'; };
-            card.onmouseleave = () => { card.style.transform = 'translateY(0)'; card.style.boxShadow = 'none'; };
-        });
-
     } catch (error) {
         console.error(error);
-        main.innerHTML = '<div class="alert alert-error">Error cargando ligas.</div>';
+        main.innerHTML = '<div class="alert alert-error">Error cargando equipos.</div>';
     }
 }
 
@@ -108,7 +94,7 @@ async function obtenerIdClubTachira() {
     }
 }
 
-async function actualizarTituloLiga() {
+async function actualizarTituloEquipo() {
     try {
         const doc = await db.collection('leagues').doc(leagueId).get();
         if (doc.exists) {
@@ -120,7 +106,7 @@ async function actualizarTituloLiga() {
             // Update Admin link to include league context
             const adminLink = document.querySelector('header .btn-primary');
             if (adminLink && leagueId) {
-                adminLink.href = `admin.html?liga=${leagueId}`;
+                adminLink.href = `admin.html?equipo=${leagueId}`;
             }
         }
     } catch (e) { console.error(e); }

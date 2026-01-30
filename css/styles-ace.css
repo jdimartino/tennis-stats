@@ -1,0 +1,399 @@
+:root {
+    /* Colors - Nano Banana Palette */
+    --color-primary: #06B6D4;
+    /* Cyan Neon */
+    --color-secondary: #3B82F6;
+    /* Royal Blue */
+    --color-accent: #EAB308;
+    /* Tennis Ball Yellow */
+    --color-dark: #0F172A;
+    /* Deep Night */
+    --color-light: #F8FAFC;
+    --color-text-muted: #94A3B8;
+
+    /* Textures */
+    --bg-body: url('../images/body-bg.png');
+
+    /* Glassmorphism */
+    --glass-bg: rgba(15, 23, 42, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --glass-blur: 12px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+body {
+    background-color: var(--color-dark);
+    background-image: var(--bg-body);
+    background-size: cover;
+    background-attachment: fixed;
+    background-blend-mode: overlay;
+    color: var(--color-light);
+    min-height: 100vh;
+}
+
+/* Glass Header */
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 100;
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(var(--glass-blur));
+    border-bottom: 1px solid var(--glass-border);
+    padding: 1rem 0;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--color-light);
+    font-weight: 700;
+    font-size: 1.25rem;
+}
+
+.logo-text-group {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
+}
+
+.branding-tag {
+    font-size: 0.65rem;
+    color: var(--color-primary);
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    opacity: 0.9;
+}
+
+.logo-icon {
+    filter: drop-shadow(0 0 5px var(--color-accent));
+}
+
+.btn-primary {
+    text-decoration: none;
+    color: var(--color-light);
+    font-size: 0.9rem;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--glass-border);
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: var(--color-primary);
+    color: var(--color-dark);
+    box-shadow: 0 0 15px var(--color-primary);
+}
+
+/* Main Content */
+.main {
+    padding-top: 6rem;
+    /* Space for fixed header */
+    min-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.section-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--color-light);
+}
+
+/* Loading Spinner */
+.loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    color: var(--color-text-muted);
+}
+
+.spinner {
+    width: 24px;
+    height: 24px;
+    border: 3px solid rgba(255, 255, 255, 0.1);
+    border-top-color: var(--color-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Team Selection Grid (Final Design) */
+.league-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 4rem;
+}
+
+.team-card {
+    position: relative;
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    padding: 2rem;
+    text-decoration: none;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.team-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    border-color: var(--color-primary);
+    box-shadow: 0 20px 40px rgba(6, 182, 212, 0.15);
+}
+
+.team-card-content {
+    position: relative;
+    z-index: 2;
+}
+
+.team-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.2));
+    transition: transform 0.3s ease;
+}
+
+.team-card:hover .team-icon {
+    transform: scale(1.1) rotate(5deg);
+}
+
+.team-name {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-light);
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, #fff 0%, #cbd5e1 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Removed team-status style as per user request to hide player counts */
+
+.team-card-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(6, 182, 212, 0.1) 0%, transparent 70%);
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 0;
+    transition: all 0.5s ease;
+    z-index: 1;
+}
+
+.team-card:hover .team-card-glow {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+/* Ranking Table Styles (If needed for inner pages) */
+.ranking-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+.ranking-table th {
+    text-align: left;
+    padding: 1rem;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.ranking-table td {
+    padding: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.ranking-table tbody tr {
+    transition: transform 0.2s ease, background-color 0.2s ease;
+    cursor: pointer;
+}
+
+.ranking-table tbody tr:hover {
+    transform: scale(1.02);
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.rank-number {
+    display: inline-flex;
+    width: 28px;
+    height: 28px;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+/* Removed gold highlight for first place as per user request */
+/* .ranking-table tr:first-child .rank-number {
+      background: var(--color-accent);
+      color: var(--color-dark);
+      box-shadow: 0 0 10px var(--color-accent);
+  } */
+
+.effectiveness {
+    color: var(--color-primary);
+    font-weight: 700;
+}
+
+/* Match Cards */
+.match-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+}
+
+.match-date {
+    color: var(--color-text-muted);
+    font-size: 0.85rem;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+}
+
+.match-teams {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+}
+
+.team-players {
+    font-weight: 600;
+}
+
+.winner .team-players {
+    color: var(--color-accent);
+    text-shadow: 0 0 10px rgba(234, 179, 8, 0.3);
+}
+
+.vs-separator {
+    color: var(--color-text-muted);
+    font-size: 0.8rem;
+    padding: 0 1rem;
+}
+
+.score-set {
+    font-weight: 700;
+    color: var(--color-light);
+    background: rgba(255, 255, 255, 0.1);
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+}
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 200;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(5px);
+}
+
+.modal-content {
+    background-color: #1e293b;
+    border: 1px solid var(--glass-border);
+    margin: 5% auto;
+    padding: 20px;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 600px;
+    color: var(--color-light);
+    position: relative;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.close-modal {
+    position: absolute;
+    right: 20px;
+    top: 15px;
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.stats-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.modal-stat-card {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 1rem;
+    border-radius: 12px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-light);
+}
+
+.modal-stat-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    margin-top: 0.25rem;
+}

@@ -397,3 +397,96 @@ body {
     color: var(--color-text-muted);
     margin-top: 0.25rem;
 }
+
+/* Historial de Partidos en Modal */
+.match-history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 0.5rem;
+    margin-top: 1rem;
+}
+
+.match-history-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.match-history-list::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+}
+
+.match-history-list::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+}
+
+.history-card {
+    background: rgba(255, 255, 255, 0.03);
+    border-left: 4px solid var(--glass-border);
+    border-radius: 8px;
+    padding: 0.85rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    transition: transform 0.2s ease;
+}
+
+.history-card:hover {
+    background: rgba(255, 255, 255, 0.05);
+    transform: translateX(4px);
+}
+
+.history-card.win {
+    border-left-color: #2ECC71;
+    background: linear-gradient(90deg, rgba(46, 204, 113, 0.1) 0%, rgba(255, 255, 255, 0.03) 100%);
+}
+
+.history-card.loss {
+    border-left-color: #EF4444;
+    background: linear-gradient(90deg, rgba(239, 68, 68, 0.1) 0%, rgba(255, 255, 255, 0.03) 100%);
+}
+
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.25rem;
+}
+
+.history-result {
+    font-weight: 800;
+}
+
+.history-result.win {
+    color: #2ECC71;
+}
+
+.history-result.loss {
+    color: #EF4444;
+}
+
+.history-players {
+    font-size: 0.95rem;
+    line-height: 1.4;
+    color: var(--color-light);
+}
+
+.history-score {
+    font-family: 'Monaco', 'Consolas', monospace;
+    font-weight: 700;
+    color: var(--color-light);
+    background: rgba(0, 0, 0, 0.3);
+    padding: 0.35rem 0.6rem;
+    border-radius: 6px;
+    align-self: flex-start;
+    font-size: 0.9rem;
+    margin-top: 0.25rem;
+    letter-spacing: 0.05em;
+}

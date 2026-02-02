@@ -1190,11 +1190,11 @@ body {
 }
 
 .history-result.win {
-  color: var(--color-success);
+  color: #2ECC71;
 }
 
 .history-result.loss {
-  color: #F87171;
+  color: #EF4444;
 }
 
 .history-players {

@@ -158,6 +158,7 @@
   --color-bg-card-hover: rgba(30, 41, 59, 0.9);
 
   /* Colores de texto */
+  --color-text: #F8FAFC;
   --color-text-primary: #F8FAFC;
   --color-text-secondary: #CBD5E1;
   --color-text-muted: #94A3B8;

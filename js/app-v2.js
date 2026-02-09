@@ -534,8 +534,22 @@ function mostrarError(mensaje) {
 
 // Inicializar cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', () => {
-    // Esperar a que Firebase esté listo
-    setTimeout(inicializarApp, 500);
+    // Wait for Firebase to initialize before starting app
+    const checkFirebase = setInterval(() => {
+        if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
+            clearInterval(checkFirebase);
+            inicializarApp();
+        }
+    }, 100);
+
+    // Fail-safe: if it doesn't load in 5 seconds, show error
+    setTimeout(() => {
+        clearInterval(checkFirebase);
+        if (typeof firebase === 'undefined' || firebase.apps.length === 0) {
+            console.error('Firebase initialization timeout');
+            mostrarError('Error de conexión con Firebase. Por favor, verifica tu internet y recarga.');
+        }
+    }, 5000);
 });
 
 /**

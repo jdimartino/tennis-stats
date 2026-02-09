@@ -1028,8 +1028,21 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Esperar a que Firebase esté listo e inicializar
-    setTimeout(inicializarAdmin, 500);
+    // Wait for Firebase to initialize before starting admin panel
+    const checkFirebase = setInterval(() => {
+        if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
+            clearInterval(checkFirebase);
+            inicializarAdmin();
+        }
+    }, 100);
+
+    // Fail-safe: if it doesn't load in 5 seconds, try to initialize anyway or log error
+    setTimeout(() => {
+        clearInterval(checkFirebase);
+        if (typeof firebase === 'undefined' || firebase.apps.length === 0) {
+            console.error('Firebase initialization timeout in Admin');
+        }
+    }, 5000);
 });
 
 /**

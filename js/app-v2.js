@@ -254,7 +254,12 @@ function mostrarRanking() {
     // Ordenar por efectividad (porcentaje de victorias)
     const ranking = Object.values(stats)
         .filter(p => !clubTachiraId || jugadores[p.id].clubId === clubTachiraId)
-        .sort((a, b) => b.efectividad - a.efectividad);
+        .sort((a, b) => {
+            if (b.efectividad !== a.efectividad) {
+                return b.efectividad - a.efectividad;
+            }
+            return b.victorias - a.victorias;
+        });
 
     if (ranking.length === 0) {
         rankingContainer.innerHTML = `

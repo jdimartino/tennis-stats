@@ -454,7 +454,22 @@ async function cargarHistorialGestion() {
             query = query.where('leagueId', '==', leagueId);
         }
 
-        const snapshot = await query.orderBy('fecha', 'desc').limit(20).get();
+        // Obtener valores del filtro de fechas
+        const fechaInicioVal = document.getElementById('filtro-fecha-inicio')?.value;
+        const fechaFinVal = document.getElementById('filtro-fecha-fin')?.value;
+
+        if (fechaInicioVal) {
+            const fechaInicio = new Date(fechaInicioVal + "T00:00:00");
+            query = query.where('fecha', '>=', firebase.firestore.Timestamp.fromDate(fechaInicio));
+        }
+
+        if (fechaFinVal) {
+            const fechaFin = new Date(fechaFinVal + "T23:59:59");
+            query = query.where('fecha', '<=', firebase.firestore.Timestamp.fromDate(fechaFin));
+        }
+
+        // Mostrar TODOS los partidos filtrados o TODOS sin filtro (se quitó el limit(20))
+        const snapshot = await query.orderBy('fecha', 'desc').get();
         const partidos = [];
         snapshot.forEach(doc => partidos.push({ id: doc.id, ...doc.data() }));
 
@@ -598,6 +613,19 @@ function calcularGanadorAutomatico(sets) {
 
     // El equipo que ganó más sets es el ganador
     return sets1 > sets2 ? 'equipo1' : 'equipo2';
+}
+
+/**
+ * Limpia los filtros de fecha de la gestión de partidos
+ */
+function limpiarFiltroFechas() {
+    const inputInicio = document.getElementById('filtro-fecha-inicio');
+    const inputFin = document.getElementById('filtro-fecha-fin');
+
+    if (inputInicio) inputInicio.value = '';
+    if (inputFin) inputFin.value = '';
+
+    cargarHistorialGestion();
 }
 
 function resetFormPartido() {

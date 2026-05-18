@@ -1,4 +1,10 @@
 {
+  "name": "tennis-stats",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "firebase emulators:start --only hosting",
+    "start": "firebase emulators:start --only hosting"
+  },
   "dependencies": {
     "firebase-tools": "^15.4.0"
   }

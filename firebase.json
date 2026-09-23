@@ -1,6 +1,6 @@
 {
     "hosting": {
-        "site": "tennis-stats-jdm",
+        "target": "tennis-stats-jdm",
         "public": ".",
         "ignore": [
             "firebase.json",

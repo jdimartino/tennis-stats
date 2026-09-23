@@ -1,5 +1,15 @@
 {
   "projects": {
     "default": "torneos-tenis-jdm"
-  }
+  },
+  "targets": {
+    "torneos-tenis-jdm": {
+      "hosting": {
+        "tennis-stats-jdm": [
+          "tennis-stats-jdm"
+        ]
+      }
+    }
+  },
+  "etags": {}
 }

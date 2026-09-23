@@ -11,12 +11,12 @@
 // 5. Copia la configuración y pégala aquí
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCz_yKIVfV1NqnNPO4wM7h52C9vmnjVoXk",
-  authDomain: "tennis-stats-6b669.firebaseapp.com",
-  projectId: "tennis-stats-6b669",
-  storageBucket: "tennis-stats-6b669.firebasestorage.app",
-  messagingSenderId: "503407429192",
-  appId: "1:503407429192:web:c350748b6fcb25cc3a3a7d"
+  apiKey: "AIzaSyAvU8uKaivoZH_401zpXyM5-OOGgi5OGcw",
+  authDomain: "torneos-tenis-jdm.firebaseapp.com",
+  projectId: "torneos-tenis-jdm",
+  storageBucket: "torneos-tenis-jdm.firebasestorage.app",
+  messagingSenderId: "951550758841",
+  appId: "1:951550758841:web:b4baab45dde503d0717068"
 };
 
 // Inicializar Firebase

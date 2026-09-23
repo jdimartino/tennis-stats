@@ -1,7 +1,7 @@
 {
     "indexes": [
         {
-            "collectionGroup": "matches",
+            "collectionGroup": "statsMatches",
             "queryScope": "COLLECTION",
             "fields": [
                 {

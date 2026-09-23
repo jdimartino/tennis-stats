@@ -58,12 +58,12 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     // Permitir lectura pública de jugadores y partidos
-    match /players/{document=**} {
+    match /statsPlayers/{document=**} {
       allow read: if true;
       allow write: if request.auth != null;
     }
     
-    match /matches/{document=**} {
+    match /statsMatches/{document=**} {
       allow read: if true;
       allow write: if request.auth != null;
     }

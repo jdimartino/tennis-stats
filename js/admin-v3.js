@@ -159,7 +159,7 @@ function configurarSelectorContexto() {
  */
 async function cargarJugadoresAdmin() {
     try {
-        let query = db.collection('players');
+        let query = db.collection('statsPlayers');
         if (leagueId) {
             query = query.where('leagueId', '==', leagueId);
         }
@@ -238,10 +238,10 @@ async function guardarJugador(nombre, apellido, categoria, clubId) {
 
     try {
         if (editId) {
-            await db.collection('players').doc(editId).update(playerData);
+            await db.collection('statsPlayers').doc(editId).update(playerData);
             mostrarAlerta('Jugador actualizado exitosamente');
         } else {
-            await db.collection('players').add({
+            await db.collection('statsPlayers').add({
                 ...playerData,
                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
             });
@@ -261,7 +261,7 @@ async function guardarJugador(nombre, apellido, categoria, clubId) {
  */
 async function prepararEdicionJugador(id) {
     try {
-        const doc = await db.collection('players').doc(id).get();
+        const doc = await db.collection('statsPlayers').doc(id).get();
         const data = doc.data();
 
         document.getElementById('edit-jugador-id').value = id;
@@ -304,7 +304,7 @@ async function eliminarJugador(jugadorId) {
     }
 
     try {
-        await db.collection('players').doc(jugadorId).delete();
+        await db.collection('statsPlayers').doc(jugadorId).delete();
         await cargarJugadoresAdmin();
         mostrarAlerta('Jugador eliminado');
     } catch (error) {
@@ -322,7 +322,7 @@ async function eliminarJugador(jugadorId) {
  */
 async function cargarClubesAdmin() {
     try {
-        const snapshot = await db.collection('clubs').orderBy('nombre').get();
+        const snapshot = await db.collection('statsClubs').orderBy('nombre').get();
         clubesAdmin = {};
 
         snapshot.forEach((doc) => {
@@ -392,7 +392,7 @@ function cargarSelectoresClubes() {
  */
 async function agregarClub(nombre) {
     try {
-        await db.collection('clubs').add({
+        await db.collection('statsClubs').add({
             nombre: nombre.trim(),
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
@@ -413,7 +413,7 @@ async function eliminarClub(clubId) {
     if (!confirm('¿Seguro que quieres eliminar este club?')) return;
 
     try {
-        await db.collection('clubs').doc(clubId).delete();
+        await db.collection('statsClubs').doc(clubId).delete();
         await cargarClubesAdmin();
         mostrarClubesGestion();
         mostrarAlerta('Club eliminado');
@@ -449,7 +449,7 @@ async function cargarHistorialGestion() {
     container.innerHTML = '<div class="text-center p-4">Cargando...</div>';
 
     try {
-        let query = db.collection('matches');
+        let query = db.collection('statsMatches');
         if (leagueId) {
             query = query.where('leagueId', '==', leagueId);
         }
@@ -532,7 +532,7 @@ async function cargarHistorialGestion() {
  */
 async function prepararEdicionMatch(id) {
     try {
-        const doc = await db.collection('matches').doc(id).get();
+        const doc = await db.collection('statsMatches').doc(id).get();
         const data = doc.data();
 
         mostrarSeccion('partidos');
@@ -583,7 +583,7 @@ async function eliminarMatch(id) {
     if (!confirm('¿Borrar este partido del historial?')) return;
     try {
         console.log('Intentando eliminar partido:', id);
-        await db.collection('matches').doc(id).delete();
+        await db.collection('statsMatches').doc(id).delete();
         mostrarAlerta('Partido eliminado correctamente');
         cargarHistorialGestion();
     } catch (error) {
@@ -703,7 +703,7 @@ async function mostrarEstadisticasJugador(jugadorId) {
 async function cargarPartidosJugador(jugadorId) {
     const partidos = [];
 
-    const snapshot = await db.collection('matches').get();
+    const snapshot = await db.collection('statsMatches').get();
 
     snapshot.forEach(doc => {
         const partido = doc.data();
@@ -975,10 +975,10 @@ function configurarFormularios() {
 
         try {
             if (editId) {
-                await db.collection('matches').doc(editId).update(matchData);
+                await db.collection('statsMatches').doc(editId).update(matchData);
                 mostrarAlerta('Partido actualizado con éxito');
             } else {
-                await db.collection('matches').add(matchData);
+                await db.collection('statsMatches').add(matchData);
                 mostrarAlerta('Partido registrado con éxito');
             }
             resetFormPartido();
@@ -1118,7 +1118,7 @@ async function cargarClubesPredefinidos() {
         }
 
         try {
-            await db.collection('clubs').add({
+            await db.collection('statsClubs').add({
                 nombre: nombre.trim(),
                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
             });
@@ -1147,7 +1147,7 @@ async function cargarClubesPredefinidos() {
  */
 async function cargarEquiposAdmin() {
     try {
-        const snapshot = await db.collection('leagues').orderBy('nombre').get();
+        const snapshot = await db.collection('statsLeagues').orderBy('nombre').get();
         ligasAdmin = {};
 
         snapshot.forEach((doc) => {
@@ -1205,7 +1205,7 @@ function mostrarEquiposGestion() {
  */
 async function agregarEquipo(nombre) {
     try {
-        await db.collection('leagues').add({
+        await db.collection('statsLeagues').add({
             nombre: nombre.trim(),
             active: true,
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
@@ -1229,7 +1229,7 @@ async function agregarEquipo(nombre) {
  */
 async function alternarEstadoEquipo(id, nuevoEstado) {
     try {
-        await db.collection('leagues').doc(id).update({ active: nuevoEstado });
+        await db.collection('statsLeagues').doc(id).update({ active: nuevoEstado });
         await cargarEquiposAdmin();
         mostrarEquiposGestion();
         mostrarAlerta(`Equipo ${nuevoEstado ? 'activado' : 'desactivado'}`);
@@ -1245,7 +1245,7 @@ async function eliminarEquipo(id) {
     if (!confirm('¿Seguro que quieres eliminar este equipo? Esto podría afectar a jugadores y partidos asociados.')) return;
 
     try {
-        await db.collection('leagues').doc(id).delete();
+        await db.collection('statsLeagues').doc(id).delete();
         await cargarEquiposAdmin();
         mostrarEquiposGestion();
         mostrarAlerta('Equipo eliminado');

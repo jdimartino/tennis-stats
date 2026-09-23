@@ -44,7 +44,7 @@ async function mostrarSelectorDeEquipos() {
     main.innerHTML = '<div class="loading"><div class="spinner"></div><span>Cargando equipos...</span></div>';
 
     try {
-        const snapshot = await db.collection('leagues').where('active', '==', true).get();
+        const snapshot = await db.collection('statsLeagues').where('active', '==', true).get();
         if (snapshot.empty) {
             main.innerHTML = '<div class="alert alert-error">No hay equipos activos disponibles.</div>';
             return;
@@ -84,7 +84,7 @@ async function mostrarSelectorDeEquipos() {
  */
 async function obtenerIdClubTachira() {
     try {
-        const snapshot = await db.collection('clubs').where('nombre', '==', 'Club Táchira').get();
+        const snapshot = await db.collection('statsClubs').where('nombre', '==', 'Club Táchira').get();
         if (!snapshot.empty) {
             clubTachiraId = snapshot.docs[0].id;
             console.log('Club Táchira ID:', clubTachiraId);
@@ -96,7 +96,7 @@ async function obtenerIdClubTachira() {
 
 async function actualizarTituloEquipo() {
     try {
-        const doc = await db.collection('leagues').doc(leagueId).get();
+        const doc = await db.collection('statsLeagues').doc(leagueId).get();
         if (doc.exists) {
             const nombre = doc.data().nombre;
             document.title = `${nombre} - Tenis Tachira Stats`;
@@ -117,7 +117,7 @@ async function actualizarTituloEquipo() {
  */
 async function cargarJugadores() {
     try {
-        const snapshot = await db.collection('players').where('leagueId', '==', leagueId).get();
+        const snapshot = await db.collection('statsPlayers').where('leagueId', '==', leagueId).get();
         jugadores = {};
 
         snapshot.forEach((doc) => {
@@ -139,7 +139,7 @@ async function cargarJugadores() {
  */
 async function cargarPartidosRecientes() {
     try {
-        const snapshot = await db.collection('matches')
+        const snapshot = await db.collection('statsMatches')
             .where('leagueId', '==', leagueId)
             .orderBy('fecha', 'desc')
             .get();

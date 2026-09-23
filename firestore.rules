@@ -2,25 +2,25 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     // Permisos para la colección de jugadores
-    match /players/{playerId} {
+    match /statsPlayers/{playerId} {
       allow read: if true;
       allow write: if request.auth != null;
     }
     
     // Permisos para la colección de partidos
-    match /matches/{matchId} {
+    match /statsMatches/{matchId} {
       allow read: if true;
       allow write: if request.auth != null;
     }
     
     // Permisos para la colección de clubes
-    match /clubs/{clubId} {
+    match /statsClubs/{clubId} {
       allow read: if true;
       allow write: if request.auth != null;
     }
 
     // Permisos para la colección de ligas
-    match /leagues/{leagueId} {
+    match /statsLeagues/{leagueId} {
       allow read: if true;
       allow write: if request.auth != null;
     }
